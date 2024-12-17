@@ -31,8 +31,8 @@ func initConfig() ConfigPostgres{
 	return ConfigPostgres{
 		Host: getEnv("HOST","localhost"),
 		Port: getEnv("PORT","5431"),
-		DB_Name: getEnv("DB_NAME","gorilla_mux_db"),
-		User: getEnv("DB_USER","sabin"),
+		DB_Name: getEnv("DB_NAME","go_bknd_api"),
+		User: getEnv("DB_USER","postgres"),
 		Password: getEnv("PASSWORD","155015"),
 		SSL_Mode: getEnv("SSL_MODE","disable"),
 	};

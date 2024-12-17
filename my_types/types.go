@@ -1,8 +1,6 @@
 package mytypes
 
 import (
-	"time"
-
 	"gorm.io/gorm"
 )
 
@@ -15,12 +13,12 @@ type UserStore interface{
 
 type User struct {
 	gorm.Model
-	ID        int       `json:"id"`
+	//ID        int       `json:"id"`
 	FirstName string    `json:"firstname"`
 	LastName  string    `json:"lastname"`
 	Email     string    `json:"email" gorm:"uniqueIndex"`
 	Password  string    `json:"-"` 
-	CreatedAt time.Time `json:"createdat"`
+	//CreatedAt time.Time `json:"createdat"`
 }
 
 

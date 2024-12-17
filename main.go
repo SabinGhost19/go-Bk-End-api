@@ -19,7 +19,7 @@ func main(){
 	}
 	fmt.Printf("Succesfully contected to the DB : %v\n",new_database);
 
-	new_server:=api.GetServer(":8080",nil);
+	new_server:=api.GetServer(":8080",new_database);
 	if err:=new_server.Run();err!=nil{
 		log.Fatalf("Error at running server: %v",err);
 	}

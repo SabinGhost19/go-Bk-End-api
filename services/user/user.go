@@ -4,12 +4,14 @@ import (
 	mytypes "ecom_test/my_types"
 	"ecom_test/services/auth"
 	"ecom_test/utils"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/go-playground/validator"
 	"github.com/gorilla/mux"
+	"gorm.io/gorm"
 )
 
 
@@ -50,12 +52,18 @@ func (h*Handler)RegisterHandler(w http.ResponseWriter,req*http.Request){
 		utils.WriteJsonError(w,http.StatusBadRequest,fmt.Errorf("error at formating: %v",errors));
 		return ; 
 	}
+
 	//check if the user exist	
 	_,err=h.store.GetUserByEmail(payload.Email);
-	if err==nil{
-		utils.WriteJsonError(w,http.StatusBadRequest,fmt.Errorf("user with email: %v already exists",payload.Email));
-		return ;		
-	}
+	if err == nil {
+        utils.WriteJsonError(w, http.StatusBadRequest, fmt.Errorf("user with email: %v already exists", payload.Email))
+        return
+    }
+    if !errors.Is(err, gorm.ErrRecordNotFound) {
+		fmt.Println("Error.....Sabin:",err);
+        utils.WriteJsonError(w, http.StatusInternalServerError, fmt.Errorf("database error: %v", err))
+        return
+    }
 
 	hashedPassword,err:=auth.HashPassword(payload.Password);
 	if err!=nil{

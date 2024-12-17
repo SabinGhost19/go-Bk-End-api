@@ -30,7 +30,6 @@ func main() {
 		log.Fatal("Error getting *sql.DB from GORM: ", err)
 		return
 	}
-
 	// create the driver
 	driver, err := postgres.WithInstance(sqlDB, &postgres.Config{})
 	if err != nil {
