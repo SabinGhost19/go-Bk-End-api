@@ -1,6 +1,7 @@
 package user
 
 import (
+	"ecom_test/config"
 	mytypes "ecom_test/my_types"
 	"ecom_test/services/auth"
 	"ecom_test/utils"
@@ -49,7 +50,7 @@ func (h*Handler)LoginHandler(w http.ResponseWriter,req *http.Request){
 	
 	found_user,err:=h.store.GetUserByEmail(payload.Email);
 	if err!=nil{
-		utils.WriteJsonError(w,http.StatusNotFound,err);
+		utils.WriteJsonError(w,http.StatusNotFound,fmt.Errorf("error at finding the user in the DB : %v",err));
 	}
 
 	err=auth.VerifyPassword(payload.Password,found_user.Password);
@@ -58,8 +59,15 @@ func (h*Handler)LoginHandler(w http.ResponseWriter,req *http.Request){
 		return ;
 	}
 
+	//create the token 
+	secret:=[]byte(config.Env.JWTSecret);
+	token,err:=auth.CreateJwt(secret,int(found_user.ID));
+	if err!=nil{
+		utils.WriteJsonError(w,http.StatusInternalServerError,err);
+		return ;
+	}
 	log.Println("Request received for Login in the User service");
-	utils.WriteJson(w,http.StatusAccepted,nil);
+	utils.WriteJson(w,http.StatusAccepted,map[string]string {"token":token});
 }
 
 func (h*Handler)RegisterHandler(w http.ResponseWriter,req*http.Request){

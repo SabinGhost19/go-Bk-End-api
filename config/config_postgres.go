@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -16,6 +17,8 @@ type ConfigPostgres struct{
 	User string
 	Password string
 	SSL_Mode string
+	JWTExpirationTime int64
+	JWTSecret string
 }
 
 
@@ -35,6 +38,8 @@ func initConfig() ConfigPostgres{
 		User: getEnv("DB_USER","postgres"),
 		Password: getEnv("PASSWORD","155015"),
 		SSL_Mode: getEnv("SSL_MODE","disable"),
+		JWTExpirationTime:getEnvAtInt("EXP_TIME",3600*24*7),
+		JWTSecret:getEnv("JWTSECRET","not-secret-here-anymore"),
 	};
 }
 
@@ -48,6 +53,18 @@ func (c*ConfigPostgres)GetConnectionString()string{
 func getEnv(key string,fallback string)string{
 	if value,ok:=os.LookupEnv(key);ok{
 		return value;
+	};
+	return fallback;
+}
+
+func getEnvAtInt(key string,fallback int64)int64{
+
+	if value,ok:=os.LookupEnv(key);ok{
+		integer_value,err:=strconv.ParseInt(value,10,64);
+		if err!=nil{
+			return fallback;
+		}
+		return integer_value;
 	};
 	return fallback;
 }
