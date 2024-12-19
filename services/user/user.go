@@ -29,7 +29,7 @@ func (h*Handler)RegisterRoutes(router*mux.Router)error{
 	
 	router.HandleFunc("/login",h.LoginHandler).Methods("POST");	
 	router.HandleFunc("/register",h.RegisterHandler).Methods("POST");		
-	
+	router.HandleFunc("/refresh",auth.RefreshToken).Methods("POST");
 	return nil;
 }
 
@@ -61,14 +61,25 @@ func (h*Handler)LoginHandler(w http.ResponseWriter,req *http.Request){
 
 	//create the token 
 	secret:=[]byte(config.Env.JWTSecret);
-	token,err:=auth.CreateJwt(secret,int(found_user.ID));
+	token,err:=auth.CreateJwt(secret,int(found_user.ID),false);
 	if err!=nil{
 		utils.WriteJsonError(w,http.StatusInternalServerError,err);
 		return ;
 	}
+	refreshtoken,err:=auth.CreateJwt(secret,int(found_user.ID),true);
+	if err!=nil{
+		utils.WriteJsonError(w,http.StatusInternalServerError,err);
+		return ;
+	}
+	
 	log.Println("Request received for Login in the User service");
-	utils.WriteJson(w,http.StatusAccepted,map[string]string {"token":token});
+	utils.WriteJson(w,http.StatusAccepted,map[string]string {
+	"token":token,
+	"refreshtoken":refreshtoken});
 }
+
+
+
 
 func (h*Handler)RegisterHandler(w http.ResponseWriter,req*http.Request){
 	

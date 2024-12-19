@@ -34,6 +34,7 @@ func (s*Server)Run()error{
 	userHandler:=user.GetUserHandler(new_user_store);
 	userHandler.RegisterRoutes(subrouter);
 
+	
 	log.Printf("Listen on port %v ...",s._addr);
 	return http.ListenAndServe(s._addr,router);
 }

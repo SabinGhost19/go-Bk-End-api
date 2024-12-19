@@ -19,7 +19,9 @@ type User struct {
 	Password  string    `json:"-"` 
 	//CreatedAt time.Time `json:"createdat"`
 }
-
+type RefreshTypePayload struct{
+	RefreshToken string `json:"refreshtoken" validate:"required"`
+}
 type LoginPayloadType struct{
 	Email string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=3,max=130"`

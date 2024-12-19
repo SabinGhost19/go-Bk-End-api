@@ -38,7 +38,7 @@ func initConfig() ConfigPostgres{
 		User: getEnv("DB_USER","postgres"),
 		Password: getEnv("PASSWORD","155015"),
 		SSL_Mode: getEnv("SSL_MODE","disable"),
-		JWTExpirationTime:getEnvAtInt("EXP_TIME",3600*24*7),
+		JWTExpirationTime:getEnvAtInt("EXP_TIME",3),
 		JWTSecret:getEnv("JWTSECRET","not-secret-here-anymore"),
 	};
 }
