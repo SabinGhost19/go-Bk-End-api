@@ -37,6 +37,7 @@ func (s*Store)GetUserByEmail(email string)(*mytypes.User,error){
 }
 
 func (s*Store) GetUserById(id int)(*mytypes.User,error){
+
 	new_user:=new (mytypes.User);
 
 	err := s.db.Where("id = ?", id).First(&new_user).Error
@@ -59,7 +60,6 @@ func (s *Store) CreateUser(user *mytypes.User) error {
         "INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)",
         user.FirstName, user.LastName, user.Email, user.Password,
     )
-
     if result.Error != nil {
         return result.Error
     }

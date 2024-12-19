@@ -33,8 +33,33 @@ func (h*Handler)RegisterRoutes(router*mux.Router)error{
 }
 
 func (h*Handler)LoginHandler(w http.ResponseWriter,req *http.Request){
-	log.Println("Request received for Login in the User service");
+
+	var payload mytypes.LoginPayloadType;
+	err:=utils.ParseJson(req,&payload);
+	if err!=nil{
+		utils.WriteJsonError(w,http.StatusBadRequest,err);
+		return ;
+	}
+
+	if err=utils.Validator.Struct(payload);err!=nil{
+		errors:=err.(validator.ValidationErrors);
+		utils.WriteJsonError(w,http.StatusBadRequest,fmt.Errorf("error at formating: %v",errors));
+		return ; 
+	}
 	
+	found_user,err:=h.store.GetUserByEmail(payload.Email);
+	if err!=nil{
+		utils.WriteJsonError(w,http.StatusNotFound,err);
+	}
+
+	err=auth.VerifyPassword(payload.Password,found_user.Password);
+	if err!=nil{
+		utils.WriteJsonError(w,http.StatusForbidden,err);
+		return ;
+	}
+
+	log.Println("Request received for Login in the User service");
+	utils.WriteJson(w,http.StatusAccepted,nil);
 }
 
 func (h*Handler)RegisterHandler(w http.ResponseWriter,req*http.Request){
