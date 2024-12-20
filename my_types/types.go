@@ -1,8 +1,6 @@
 package mytypes
 
 import (
-	"time"
-
 	"gorm.io/gorm"
 )
 
@@ -41,11 +39,11 @@ type ProductStore interface{
 }
 type Product struct{
 	gorm.Model
-	ID	int `json:"id"`
+	//ID	int `json:"id"`
 	Name string `json:"name"`
 	Description string `json:"description"`
 	Image string `json:"image"`
 	Price float64 `json:"price"`
 	Quantity int   `json:"quantity"`
-	CreatedAt time.Time `json:"createdAt"`
+	//CreatedAt time.Time `json:"createdAt"`
 }
