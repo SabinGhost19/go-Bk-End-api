@@ -1,6 +1,8 @@
 package mytypes
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -32,4 +34,18 @@ type UserType struct{
 	LastName string `json:"lastname" validate:"required"`
 	Email string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=3,max=130"`
+}
+
+type ProductStore interface{
+	GetProducts()([]Product,error);
+}
+type Product struct{
+	gorm.Model
+	ID	int `json:"id"`
+	Name string `json:"name"`
+	Description string `json:"description"`
+	Image string `json:"image"`
+	Price float64 `json:"price"`
+	Quantity int   `json:"quantity"`
+	CreatedAt time.Time `json:"createdAt"`
 }

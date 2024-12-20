@@ -1,6 +1,7 @@
 package api
 
 import (
+	"ecom_test/services/product"
 	"ecom_test/services/user"
 	"log"
 	"net/http"
@@ -34,6 +35,12 @@ func (s*Server)Run()error{
 	userHandler:=user.GetUserHandler(new_user_store);
 	userHandler.RegisterRoutes(subrouter);
 
+
+	
+	new_product_store:=product.NewStore(s.database);
+
+	productHandler:=product.GetProductHandler(new_product_store);
+	productHandler.RegisterRoutes(subrouter);
 	
 	log.Printf("Listen on port %v ...",s._addr);
 	return http.ListenAndServe(s._addr,router);

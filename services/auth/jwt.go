@@ -83,11 +83,11 @@ func CreateJwt(secret []byte,user_id int,isRefreshed bool)(string,error){
 		"expiredAt": time.Now().Add(expiration_time).Unix(),
 		"isRefreshed": isRefreshed,
 	});
-
+	
 	tokenString, err := token.SignedString(secret);
 	if err!=nil{
 		return "",err;
 	}
-
+	
 	return tokenString,nil;
 }
