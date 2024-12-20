@@ -10,6 +10,12 @@ type UserStore interface{
 	CreateUser(*User)error
 }
 
+type ProductStore interface{
+	GetProducts()([]Product,error);
+	GetProductByName(name string) (*Product, error)
+	CreateProduct(product Product)error
+}
+
 type User struct {
 	gorm.Model
 	//ID        int       `json:"id"`
@@ -34,8 +40,12 @@ type UserType struct{
 	Password string `json:"password" validate:"required,min=3,max=130"`
 }
 
-type ProductStore interface{
-	GetProducts()([]Product,error);
+type ProductPayload struct{
+	Name string `json:"name"  validate:"required"`
+	Description string `json:"description"  validate:"required"`
+	Image string `json:"image"  validate:"required"`
+	Price float64 `json:"price"  validate:"required"`
+	Quantity int   `json:"quantity"  validate:"required"`
 }
 type Product struct{
 	gorm.Model
