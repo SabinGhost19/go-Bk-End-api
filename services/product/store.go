@@ -26,7 +26,16 @@ func (s*Store)CreateProduct(product mytypes.Product)error{
 
     return nil
 }
+func (s*Store)GetProductsByIds(productIDs []int)([]mytypes.Product,error){
+	var products []mytypes.Product
 
+	result := s.db.Where("id IN ?", productIDs).Find(&products)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return products, nil
+}
 func (s *Store) GetProductByName(name string) (*mytypes.Product, error) {
 	var product mytypes.Product
 

@@ -39,5 +39,20 @@ func (h*Handler)handleCheckOut(w http.ResponseWriter,req*http.Request){
 		utils.WriteJsonError(w,http.StatusBadRequest,fmt.Errorf("error at formating: %v",errors));
 		return ; 
 	}
+	
+	all_id,err:=GetItemsId(cartpayload.Items);
+	if err!=nil{
+		utils.WriteJsonError(w,http.StatusBadRequest,err);
+	}
+
+	//get the products id 
+	products,err:=h.productStore.GetProductsByIds(all_id);
+	if err != nil {
+		utils.WriteJsonError(w, http.StatusInternalServerError, err)
+		return
+	}
+	
+	createOrder(cartpayload,products);
+	
 
 }
