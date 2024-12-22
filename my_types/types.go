@@ -49,9 +49,20 @@ type User struct {
 	Password  string    `json:"-"` 
 	//CreatedAt time.Time `json:"createdat"`
 }
+
+type CartCheckoutItem struct{
+	ItemID int `json:"itemID"`
+	Quantity int `json:"quantity"`
+}
+
+type CartCheckoutPayload struct{
+	Items []CartCheckoutItem `json:"item",validate:"required"`
+}
+
 type RefreshTypePayload struct{
 	RefreshToken string `json:"refreshtoken" validate:"required"`
 }
+
 type LoginPayloadType struct{
 	Email string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=3,max=130"`
