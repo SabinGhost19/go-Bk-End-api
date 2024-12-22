@@ -4,6 +4,10 @@ import (
 	"gorm.io/gorm"
 )
 
+type OrderStore interface {
+	CreateOrder(Order) (int, error)
+	CreateOrderItem(OrderItem) error
+}
 type UserStore interface{
 	GetUserByEmail(email string)(*User,error)
 	GetUserById(id int)(*User,error)
@@ -14,6 +18,26 @@ type ProductStore interface{
 	GetProducts()([]Product,error);
 	GetProductByName(name string) (*Product, error)
 	CreateProduct(product Product)error
+}
+
+type Order struct {
+	gorm.Model
+	//ID        int       `json:"id"`
+	UserID    int       `json:"userID"`
+	Total     float64   `json:"total"`
+	Status    string    `json:"status"`
+	Address   string    `json:"address"`
+	//CreatedAt time.Time `json:"createdAt"`
+}
+
+type OrderItem struct {
+	gorm.Model
+	//ID        int       `json:"id"`
+	OrderID   int       `json:"orderID"`
+	ProductID int       `json:"productID"`
+	Quantity  int       `json:"quantity"`
+	Price     float64   `json:"price"`
+	//CreatedAt time.Time `json:"createdAt"`
 }
 
 type User struct {
