@@ -19,6 +19,7 @@ type ProductStore interface{
 	GetProductByName(name string) (*Product, error)
 	CreateProduct(product Product)error
 	GetProductsByIds(productIDs []int)([]Product,error)
+	UpdateProduct(product Product) error 
 }
 
 type Order struct {

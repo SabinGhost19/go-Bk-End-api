@@ -52,7 +52,7 @@ func (h*Handler)handleCheckOut(w http.ResponseWriter,req*http.Request){
 		return
 	}
 	
-	createOrder(cartpayload,products);
+	toatal,err:=h.createOrder(cartpayload.Items,products);
 	
 
 }

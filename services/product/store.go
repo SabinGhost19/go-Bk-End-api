@@ -36,6 +36,13 @@ func (s*Store)GetProductsByIds(productIDs []int)([]mytypes.Product,error){
 
 	return products, nil
 }
+func (s *Store) UpdateProduct(product mytypes.Product) error {
+	result := s.db.Exec("UPDATE products SET name = ?, price = ?, image = ?, description = ?, quantity = ? WHERE id = ?", product.Name, product.Price, product.Image, product.Description, product.Quantity, product.ID)
+	if result.Error!= nil {
+		return result.Error;
+	}
+	return nil
+}
 func (s *Store) GetProductByName(name string) (*mytypes.Product, error) {
 	var product mytypes.Product
 
