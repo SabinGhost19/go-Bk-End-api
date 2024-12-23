@@ -2,6 +2,7 @@ package cart
 
 import (
 	mytypes "ecom_test/my_types"
+	"ecom_test/services/auth"
 	"ecom_test/utils"
 	"fmt"
 	"net/http"
@@ -29,11 +30,17 @@ func (h*Handler)RegisterRoutes(router *mux.Router)error{
 
 func (h*Handler)handleCheckOut(w http.ResponseWriter,req*http.Request){
 	var cartpayload mytypes.CartCheckoutPayload;
+
+	//get the user item for use in the order creation 
+	userID:=auth.GetUserIdfromContext(req.Context());
+
+	//parse and populate the struct payload 
 	err:=utils.ParseJson(req,&cartpayload);
 	if err!=nil{
 		utils.WriteJsonError(w,http.StatusBadRequest,err);
 		return ;
 	}
+	//validate the struct based on the mytypes declaration
 	if err=utils.Validator.Struct(cartpayload);err!=nil{
 		errors:=err.(validator.ValidationErrors);
 		utils.WriteJsonError(w,http.StatusBadRequest,fmt.Errorf("error at formating: %v",errors));
@@ -52,7 +59,17 @@ func (h*Handler)handleCheckOut(w http.ResponseWriter,req*http.Request){
 		return
 	}
 	
-	toatal,err:=h.createOrder(cartpayload.Items,products);
-	
+	//create the oreder
+	orderID,toatal,err:=h.createOrder(cartpayload.Items,products,userID);
+	if err!=nil{
+		utils.WriteJsonError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	//return the response 
+	utils.WriteJson(w,http.StatusOK,map[string]interface{}{
+		"total price":toatal,
+		"order_id":orderID,
+	});
 
 }

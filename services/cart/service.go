@@ -17,7 +17,7 @@ func GetItemsId(items []mytypes.CartCheckoutItem)([]int,error){
 	return all_id,nil;
 }
 
-func (h*Handler)createOrder(cartItems []mytypes.CartCheckoutItem,products []mytypes.Product)(float64,error){
+func (h*Handler)createOrder(cartItems []mytypes.CartCheckoutItem,products []mytypes.Product,userID int)(int,float64,error){
 	product_map:=make(map[int]mytypes.Product);
 	
 	//create the map
@@ -27,7 +27,7 @@ func (h*Handler)createOrder(cartItems []mytypes.CartCheckoutItem,products []myty
 
 	err:=checkIfTheCartIsInStock(cartItems,product_map);
 	if err!=nil{
-		return 0,err;
+		return 0,0,err;
 	}
 
 	total_price:=calculateTotalPrice(product_map,cartItems);
@@ -38,8 +38,25 @@ func (h*Handler)createOrder(cartItems []mytypes.CartCheckoutItem,products []myty
 		product.Quantity=item.Quantity;
 		h.productStore.UpdateProduct(product);
 	}
-	
 
+	orderID,err:=h.store.CreateOrder(mytypes.Order{UserID: userID,
+	Total: total_price,
+	Status: "pending",
+	Address: "someAddress",});
+	//can be taken from user table
+	if err != nil {
+		return 0,0, err
+	}
+	for _,item:=range cartItems{
+		h.store.CreateOrderItem(mytypes.OrderItem{OrderID: orderID,
+		ProductID: item.ItemID,
+		Quantity: item.Quantity,
+		Price: product_map[item.ItemID].Price,})
+	}
+
+	return orderID,total_price,nil;
+
+	
 }
 func calculateTotalPrice(product_map map[int]mytypes.Product,items []mytypes.CartCheckoutItem)float64{
 	var total float64;
@@ -59,7 +76,7 @@ func checkIfTheCartIsInStock(cart []mytypes.CartCheckoutItem,product_map map[int
 	for _,item:=range cart{
 		product,ok:=product_map[item.ItemID];
 		if !ok{
-			return fmt.Errorf("product %d is not available in the store, please refresh your cart", item.ProductID)
+			return fmt.Errorf("product %d is not available in the store, please refresh your cart", item.ItemID)
 		}
 
 		if product.Quantity<item.Quantity{

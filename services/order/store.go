@@ -15,12 +15,19 @@ func NewStore(db *gorm.DB)*Store{
 	return &Store{db: db};
 }
 
-func (s*Store)CreateOrder(order mytypes.Order) error{
-	result:=s.db.Exec("INSERT INTO orders (userId,total,status,address) VALUES (?,?,?,?)",order.UserID,order.Total,order.Status,order.Address)
-	if result.Error!=nil{
-		return result.Error;
+func (s*Store)CreateOrder(order mytypes.Order) (int,error){
+	var id int
+
+	result := s.db.Raw(
+		"INSERT INTO orders (userId, total, status, address) VALUES (?, ?, ?, ?) RETURNING id",
+		order.UserID, order.Total, order.Status, order.Address,
+	).Scan(&id)
+
+	if result.Error != nil {
+		return 0, result.Error
 	}
-	return nil;
+
+	return id, nil
 }
 
 func (s*Store)CreateOrderItem(orderItem mytypes.OrderItem) error{

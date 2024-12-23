@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"ecom_test/config"
 	mytypes "ecom_test/my_types"
 	"ecom_test/utils"
@@ -12,6 +13,10 @@ import (
 	"github.com/go-playground/validator"
 	"github.com/golang-jwt/jwt"
 )
+
+type contextKey string
+
+const UserKey contextKey = "userID"
 
 func RefreshToken(w http.ResponseWriter,req *http.Request){
 
@@ -90,4 +95,13 @@ func CreateJwt(secret []byte,user_id int,isRefreshed bool)(string,error){
 	}
 	
 	return tokenString,nil;
+}
+
+
+func GetUserIdfromContext(ctx context.Context)int{
+	userID,ok:=ctx.Value(UserKey).(int)
+	if !ok {
+		return -1
+	}
+	return userID
 }
